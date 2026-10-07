@@ -10,7 +10,7 @@ This project tests whether a quantum layer helps under those conditions. The two
 
 **Result:** with only 4 labeled insiders, the hybrid detector beats the classical detector on all five seeds in ROC-AUC (0.945 vs. 0.891) and F1 (0.184 vs. 0.090), one-sided Wilcoxon p = 0.031. It never collapsed (test PR-AUC below 0.05), while the classical detector collapsed in 40% of runs. In the two smallest models, the collapse rate was 0% for the hybrid and 60% for the classical detector. The advantage disappears when labels and model capacity are ample.
 
-![Test PR-AUC vs. model size and labeled insiders](Images/hybrid_vs_classical_pr_auc.png)
+![Test PR-AUC vs. model size and labeled insiders](hybrid_vs_classical_pr_auc.png)
 
 ## Dataset
 
