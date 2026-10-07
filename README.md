@@ -1,20 +1,21 @@
 # Hybrid Quantum-Classical Insider-Threat Detection (CERT r4.2)
 
-Empirical evaluation for the paper **"Incorporating Quantum Security in Privacy Preserving Digital Forensics"**
-(Milinda Rambel Stone, Eric Yocam, Varghese Vaidyan, Dakota State University).
+A controlled, reproducible comparison of a hybrid quantum-classical neural network with a parameter-matched classical network for detecting malicious insiders in enterprise activity logs.
 
-## Why the empirical portion matters
+## Why this matters
 
-The paper proposes a quantum-ready, privacy-preserving AI-DFIR architecture and illustrates it with a healthcare insider-threat case study. One of the architecture's central claims is that a hybrid quantum-classical engine improves the correlation of insider activity. Without evidence, that claim remains a projection.
+Quantum machine learning is often claimed to improve cybersecurity analytics, but such claims are rarely tested against a fair classical baseline. Insider-threat detection is a strong test case for two reasons. Confirmed malicious insiders are rare, so models must learn from very few labeled cases. Detectors are often deployed on premises, where small, auditable models are preferred.
 
-This repository supplies the evidence. It tests the claim on a public, labeled benchmark under the conditions of the case study: a single hospital system with **few confirmed insider cases** and **compact, on-premises models**. The comparison is built to be fair: the two models have identical parameter counts, each gets its own tuned learning rate, results are paired across five seeds, and every setting is reported, including those where the classical model wins.
+This project tests whether a quantum layer helps under those conditions. The two models have identical parameter counts, and each gets its own tuned learning rate. Results are paired across five seeds and tested for significance. Every setting is reported, including those where the classical model wins.
 
-**Result:** with only 4 labeled insiders, the hybrid detector beats the classical detector on all five seeds in ROC-AUC (0.945 vs. 0.891) and F1 (0.184 vs. 0.090), one-sided Wilcoxon p = 0.031. It never collapsed (test PR-AUC below 0.05), while the classical detector collapsed in 40% of runs. In the two smallest models the collapse rate was 0% for the hybrid and 60% for the classical detector. The advantage disappears when labels and model capacity are ample.
+**Result:** with only 4 labeled insiders, the hybrid detector beats the classical detector on all five seeds in ROC-AUC (0.945 vs. 0.891) and F1 (0.184 vs. 0.090), one-sided Wilcoxon p = 0.031. It never collapsed (test PR-AUC below 0.05), while the classical detector collapsed in 40% of runs. In the two smallest models, the collapse rate was 0% for the hybrid and 60% for the classical detector. The advantage disappears when labels and model capacity are ample.
+
+![Test PR-AUC vs. model size and labeled insiders](Images/hybrid_vs_classical_pr_auc.png)
 
 ## Dataset
 
 **CERT Insider Threat Test Dataset, release r4.2**, from the CERT Division of the Software Engineering Institute, Carnegie Mellon University.
-DOI: [10.1184/R1/12841247.v1](https://doi.org/10.1184/R1/12841247.v1), licensed CC BY 4.0. The dataset is synthetic, with benign background activity and labeled malicious-insider scenarios.
+DOI: [10.1184/R1/12841247.v1](https://doi.org/10.1184/R1/12841247.v1), licensed CC BY 4.0. It is synthetic enterprise data: benign background activity plus labeled malicious-insider scenarios such as after-hours access, removable-media use, and data exfiltration.
 
 | Item | Value |
 |---|---|
@@ -56,7 +57,7 @@ The notebook downloads the dataset and its answer key, verifies their MD5 checks
 | `QDFIR_Hybrid_Confirmation_CERT_r42.ipynb` | **Main notebook.** A single standalone Colab cell: data download or reuse, features, tuning, five-seed runs, statistics, LaTeX tables, and the figure |
 | `QDFIR_Hybrid_Insider_Threat_CERT_r42.ipynb` | Initial baseline comparison (fixed hyperparameters, three seeds) |
 | `QDFIR_Hybrid_Followup_CERT_r42.ipynb` | Exploratory follow-up (label scarcity and model size, three seeds) |
-| `Images/hybrid_vs_classical_pr_auc.png` | Paper figure: test PR-AUC versus model size and labeled insiders |
+| `Images/hybrid_vs_classical_pr_auc.png` | Results figure |
 
 ## How to run
 
@@ -74,18 +75,19 @@ Outputs are written to `MyDrive/QDFIR_Empirical/results/confirmation/`:
 
 ## Design decisions
 
-- **Exact simulation instead of quantum hardware.** This isolates the quantum layer's effect on detection quality from hardware noise. The study measures accuracy and stability, not speedup.
-- **CERT r4.2** stands in for hospital identity and EHR telemetry, because it is a public, labeled insider-threat benchmark.
+- **Exact simulation instead of quantum hardware.** This isolates the quantum layer's effect on detection quality from hardware noise. The project measures accuracy and stability, not speedup.
+- **CERT r4.2** was chosen because it is a public, labeled insider-threat benchmark.
 - **Splitting by user** prevents any individual's behavior from leaking between training and test, at the cost of a test set with 15 insiders.
 - **Shared learning-rate grid.** Both models search the same grid. Three of the fourteen selections fell at the edge of the grid.
 
-## Citation
+## Dataset citation
 
+```bibtex
 @misc{Lindauer2020CERT,
-  author = {Lindauer, Brian},
-  title  = {Insider Threat Test Dataset},
+  author    = {Lindauer, Brian},
+  title     = {Insider Threat Test Dataset},
   publisher = {Carnegie Mellon University},
-  year   = {2020},
-  doi    = {10.1184/R1/12841247.v1}
+  year      = {2020},
+  doi       = {10.1184/R1/12841247.v1}
 }
 ```
